@@ -1,1 +1,3 @@
-chris_plugin~=0.0.5
+chris_plugin~=0.0.10
+pycivet==0.0.1a5
+loguru~=0.6.0

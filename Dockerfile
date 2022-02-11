@@ -1,15 +1,14 @@
-FROM docker.io/python:3.10.2-slim-buster
+FROM docker.io/fnndsc/mni-conda-base:civet2.1.1-python3.10.2
 
 LABEL org.opencontainers.image.authors="FNNDSC <dev@babyMRI.org>" \
-      org.opencontainers.image.title="ChRIS Plugin Title" \
-      org.opencontainers.image.description="A ChRIS ds plugin that..."
+      org.opencontainers.image.title="sphere_mesh ChRIS plugin wrapper"
 
-WORKDIR /usr/local/src/app
+WORKDIR /usr/local/src/ep-sphere_mesh
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY . .
-RUN pip install --use-feature=in-tree-build .
+RUN pip install .
 
-CMD ["commandname", "--help"]
+CMD ["sphere_mesh_wrapper", "--help"]
