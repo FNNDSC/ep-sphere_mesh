@@ -13,7 +13,7 @@ setup(
     python_requires  = '>=3.10.2',
     entry_points     = {
         'console_scripts': [
-            'sphere_mesh_wrapper = sphere_mesh_wrapper.app:main'
+            'sphere_mesh_wrapper = sphere_mesh_wrapper:main'
             ]
         },
     classifiers      = [
