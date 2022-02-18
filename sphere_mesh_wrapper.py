@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import sys
 from pathlib import Path
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
 from chris_plugin import chris_plugin, PathMapper
@@ -18,6 +19,8 @@ parser.add_argument('-s', '--side', default='auto', choices=SIDE_OPTIONS,
                     help='brain hemisphere side. "auto" => infer from file name')
 parser.add_argument('-p', '--pattern', default='**/*.mnc',
                     help='pattern for file names to include')
+parser.add_argument('-q', '--quiet', action='store_true',
+                    help='disable status messages')
 
 
 def pick_side(mask: Path, side: SideStr) -> Optional[Side]:
@@ -67,6 +70,10 @@ def sphere_mesh_wrapper(mask: Path, surface: Path, side: SideStr):
     parser=parser
 )
 def main(options: Namespace, inputdir: Path, outputdir: Path):
+    if options.quiet:
+        logger.remove()
+        logger.add(sys.stderr, level='WARNING')
+
     results = []
     with ThreadPoolExecutor(max_workers=len(os.sched_getaffinity(0))) as pool:
         mapper = PathMapper(inputdir, outputdir, glob=options.pattern, suffix='.obj')

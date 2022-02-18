@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name             = 'ep-sphere_mesh',
-    version          = '0.0.1',
+    version          = '0.0.2',
     description      = 'A ChRIS ds plugin wrapper for sphere_mesh',
     author           = 'Jennings Zhang',
     author_email     = 'Jennings.Zhang@childrens.harvard.edu',
