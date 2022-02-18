@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-
 import os
 from pathlib import Path
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
 from chris_plugin import chris_plugin, PathMapper
 from concurrent.futures import ThreadPoolExecutor
-from typing import Optional, Literal
+from typing import Optional, Literal, Sequence, BinaryIO
 from civet.extraction.hemisphere import Side, HemisphereMask
 import subprocess as sp
 from loguru import logger
@@ -38,15 +37,24 @@ def pick_side(mask: Path, side: SideStr) -> Optional[Side]:
     raise ValueError(f'side must be one of: {SIDE_OPTIONS}')
 
 
+def curry_log(log: BinaryIO):
+    def run_with_log(cmd: Sequence[str | os.PathLike]) -> None:
+        log.write(b'[sphere_mesh_wrapper]$> ')
+        log.write(str(cmd).encode('utf-8'))
+        log.write(b'\n')
+        log.flush()
+        sp.run(cmd, stderr=log, stdout=log, check=True)
+    return run_with_log
+
+
 def sphere_mesh_wrapper(mask: Path, surface: Path, side: SideStr):
-    initial_model = HemisphereMask.get_model_for(pick_side(mask, side))
     log_path = surface.with_suffix('.sphere_mesh.log')
     try:
         logger.info('Processing {} to {}, log: {}', mask, surface, log_path)
         with log_path.open('wb') as log:
             HemisphereMask(mask)\
-                .sphere_mesh_from(initial_model, stdout=log, stderr=sp.STDOUT)\
-                .save(surface)
+                .just_sphere_mesh(pick_side(mask, side))\
+                .save(surface, shell=curry_log(log))
         logger.info('Completed {}', surface)
     except Exception as e:
         logger.exception('Failed to process {}', mask)
