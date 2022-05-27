@@ -76,7 +76,7 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
 
     results = []
     with ThreadPoolExecutor(max_workers=len(os.sched_getaffinity(0))) as pool:
-        mapper = PathMapper(inputdir, outputdir, glob=options.pattern, suffix='.obj')
+        mapper = PathMapper.file_mapper(inputdir, outputdir, glob=options.pattern, suffix='.obj')
         for mnc, obj in mapper:
             results.append(pool.submit(sphere_mesh_wrapper, mnc, obj, options.side))
 
